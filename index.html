@@ -1,1 +1,282 @@
+<!DOCTYPE html>  <html lang="ar" dir="rtl">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>كافيه أبو النجي</title>  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">  <style>  
+body{  
+    margin:0;  
+    font-family:'Cairo',sans-serif;  
+    background:#2b1a12;  
+    color:#fff;  
+}  
+header{  
+    background:#3a2317;  
+    padding:20px;  
+    text-align:center;  
+}  
+header h1{margin:0;font-size:30px;}  
+  
+.marquee{  
+    margin-top:10px;  
+    background:#5a3523;  
+    padding:10px;  
+    overflow:hidden;  
+}  
+.marquee span{  
+    display:inline-block;  
+    white-space:nowrap;  
+    animation:scroll 12s linear infinite;  
+}  
+@keyframes scroll{  
+    from{transform:translateX(100%)}  
+    to{transform:translateX(-100%)}  
+}  
+  
+/* الأقسام */  
+.section{  
+    margin:15px;  
+    background:#4a2d1e;  
+    border-radius:12px;  
+}  
+.section h2{  
+    margin:0;  
+    padding:15px;  
+    cursor:pointer;  
+    background:#5c3725;  
+    border-radius:12px;  
+}  
+.items{  
+    display:none;  
+    padding:10px;  
+}  
+.item{  
+    background:#6b402a;  
+    border-radius:10px;  
+    padding:10px;  
+    margin-bottom:10px;  
+}  
+.controls{  
+    display:flex;  
+    gap:5px;  
+    margin-top:5px;  
+}  
+.controls button{  
+    flex:1;  
+}  
+textarea{  
+    width:100%;  
+    margin-top:5px;  
+    border-radius:6px;  
+    border:none;  
+    padding:6px;  
+    font-family:'Cairo';  
+    box-sizing: border-box;
+}  
+  
+/* أزرار */  
+button{  
+    background:#8b5a2b;  
+    border:none;  
+    color:#fff;  
+    padding:7px;  
+    border-radius:6px;  
+    cursor:pointer;  
+}  
+  
+/* زر السلة */  
+.cart-btn{  
+    position:fixed;  
+    bottom:20px;  
+    right:20px;  
+    width:60px;  
+    height:60px;  
+    background:#8b5a2b;  
+    border-radius:50%;  
+    display:flex;  
+    align-items:center;  
+    justify-content:center;  
+    font-size:26px;  
+    cursor:pointer;  
+    z-index: 1000;
+}  
+  
+/* السلة */  
+.cart{  
+    position:fixed;  
+    bottom:0;  
+    left:0;  
+    right:0;  
+    background:#3a2317;  
+    padding:15px;  
+    display:none;  
+    z-index: 1001;
+    border-radius: 15px 15px 0 0;
+}  
+.cart-items{  
+    max-height:200px;  
+    overflow:auto;  
+    margin-bottom:10px;  
+    font-size:14px;  
+}  
+.cart input{  
+    width:100%;  
+    padding:6px;  
+    margin-bottom:8px;  
+    border-radius:6px;  
+    border:none;  
+    box-sizing: border-box;
+}  
+  
+/* المجموع */  
+.total{  
+    margin-top:5px;  
+    font-weight:bold;  
+    font-size:16px;  
+}  
+  
+/* أزرار جانبية */  
+.fixed{  
+    position:fixed;  
+    top:50%;  
+    left:10px;  
+    display:flex;  
+    flex-direction:column;  
+    gap:10px;  
+    z-index: 999;
+}  
+.fixed a{  
+    background:#8b5a2b;  
+    color:white;  
+    text-decoration:none;  
+    padding:10px;  
+    border-radius:50%;  
+    text-align:center;  
+}  
+.delete-btn{  
+    background:#c0392b !important;  
+    padding:2px 6px;  
+    font-size:12px;  
+    border-radius:4px;  
+    margin-right:10px;  
+}  
+</style>  </head>  <body>  <header>  
+    <h1>كافيه أبو النجي</h1>  
+    <div class="marquee">  
+        <span>🔥 اشتري بقيمة 5 دنانير واحصل على نفس الأرجيلة مجاناً من اختيارك 🔥</span>  
+    </div>  
+</header>  <div id="menu"></div>  <div class="cart-btn" onclick="toggleCart()">🛒</div>  <div class="cart" id="cartBox">  
+    <h3>سلة المشتريات</h3>  
+    <input id="table" placeholder="رقم الطاولة">  
+    <div class="cart-items" id="cart"></div>  
+    <div class="total" id="total">المجموع: 0 د</div>  
+    <button onclick="sendWhats()">📲 إرسال الطلب واتساب</button>  
+    <button onclick="toggleCart()">❌ إغلاق</button>  
+</div>  <div class="fixed">  
+    <a href="https://www.facebook.com/share/17unLCMkRw/" target="_blank">f</a>  
+    <a href="tel:+962779864264">📞</a>  
+</div>  <script>  
+const data={  
+"المشروبات الباردة":{"بوم بوم":1,"بابركان":0.6,"إكس باور":0.5,"ريتا":0.5,"جوي صغيرة":0.3,"جوي كبير":0.5,"جوي جامبو":0.35,"بيبسي 2 لتر":1,"بيبسي 1 لتر":0.6,"عصير ميزو":0.5,"قهوة باردة":0.6,"بي أم":0.3,"رد بلو":0.3,"عصير طبيعي":1.5,"آيس لاتيه":1.5,"سبانيش لاتيه":1.5,"آيس كوفي":1.5,"ماء كبير":0.35,"ماء صغير":0.25},  
+"ميلك شيك":{"ميلك شيك":1.5,"أوريو":1.5,"لوتس":1.5,"نوتيلا":1.5,"بوظة عربية":1.5},
+"المشروبات الساخنة":{"قهوة العميد":0.6,"بن برازيلي":0.5,"فرنسي بالبندق":0.5,"بن معروف":0.5,"نسكافيه":0.5,"نسكافيه بالبندق":0.5,"نسكافيه بالهيل":0.5,"نسكافيه بالكراميل":0.5,"كابتشينو":0.5,"هوت شوكلت":0.5,"شاي كرك":0.5,"سحلب":0.5,"شاي":0.25,"زهورات":0.5},  
+"الكوكتيلات":{"كوكتيل فواكه مشكلة":1.5,"مانجا":1.5,"فراولة":1.5,"ميكس":1.5,"موز وحليب":1.5,"أفوكادو":2.0},  
+"الأراجيل":{"أرجيلة نخلة":2,"أرجيلة فاخر":2,"أرجيلة مزايا":2,"تجديد رأس":1},  
+"الدخان":{"مارلبورو أحمر":2.85,"مارلبورو أبيض":2.85,"وينستون أبيض":2.6,"وينستون أحمر":2.6,"جولد كوست أبيض":2.4,"جولد كوست أحمر":2.4,"جولد كوست أبيض طويل":2.4,"جولد كوست أحمر طويل":2.4,"كنت أزرق":2.6,"كنت أدفانس":2.6,"LD أبيض":2.1,"LD أحمر":2.1,"LM سليم أبيض":2.1}  
+};  
+  
+let cart=[],qty={},total=0;  
+const menu=document.getElementById("menu");  
+const totalDiv=document.getElementById("total");  
+  
+function renderCart(){  
+    const cartDiv=document.getElementById("cart");  
+    cartDiv.innerHTML="";  
+    total=0;  
+    cart.forEach((c,i)=>{  
+        total += c.price*c.qty;  
+        const div=document.createElement("div");  
+        div.style.borderBottom="1px solid #5a3523";
+        div.style.padding="5px 0";
+        div.innerHTML=`${c.name} × ${c.qty} = ${ (c.price*c.qty).toFixed(2)} د ${c.note?`<br><small style="color:#ffcc00">ملاحظة: ${c.note}</small>`:""}  
+        <button class="delete-btn" onclick="deleteItem(${i})">حذف</button>`;  
+        cartDiv.appendChild(div);  
+    });  
+    totalDiv.innerText="المجموع: "+total.toFixed(2)+" د";  
+}  
+  
+function deleteItem(index){  
+    cart.splice(index,1);  
+    renderCart();  
+}  
+  
+for(let sec in data){  
+    let s=document.createElement("div");  
+    s.className="section";  
+    s.innerHTML=`<h2 onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display=='block'?'none':'block'">${sec}</h2>`;  
+    let items=document.createElement("div");  
+    items.className="items";  
+  
+    for(let item in data[sec]){  
+        let itemId = item.replace(/\s+/g, '-');
+        items.innerHTML+=`  
+        <div class="item">  
+            <b>${item}</b> - ${data[sec][item]} د  
+            <textarea id="n-${itemId}" placeholder="أضف ملاحظاتك هنا (مثل: سكر خفيف، بدون ثلج...)"></textarea>  
+            <div class="controls">  
+                <button onclick="chg('${itemId}',-1)">-</button>  
+                <span id="q-${itemId}" style="padding:0 10px">1</span>
+                <button onclick="chg('${itemId}',1)">+</button>  
+                <button onclick="add('${item}','${itemId}',${data[sec][item]})">إضافة</button>  
+            </div>  
+        </div>`;  
+        qty[itemId] = 1;
+    }  
+    s.appendChild(items);  
+    menu.appendChild(s);
+}
 
+function chg(id,v){
+    qty[id]=(qty[id]||1)+v;
+    if(qty[id]<1) qty[id]=1;
+    document.getElementById("q-"+id).innerText = qty[id];
+}
+
+function add(name,id,price){
+    let q=qty[id]||1;
+    let note=document.getElementById("n-"+id).value;
+    cart.push({name:name,qty:q,price:price,note:note});
+    renderCart();
+    // إعادة تعيين الحقول
+    qty[id]=1;
+    document.getElementById("q-"+id).innerText = 1;
+    document.getElementById("n-"+id).value="";
+    alert("تمت الإضافة للسلة");
+}
+
+function toggleCart(){
+    let c=document.getElementById("cartBox");
+    c.style.display=c.style.display=="block"?"none":"block";
+}
+
+function sendWhats(){
+    if(cart.length==0){alert("السلة فارغة");return;}
+    let table=document.getElementById("table").value||"غير محدد";
+    let msg = `*طلب جديد من كافيه أبو النجي*%0A`;
+    msg += `*رقم الطاولة:* ${table}%0A`;
+    msg += `--------------------------%0A`;
+    
+    cart.forEach(c => {
+        msg += `• ${c.name} (عدد ${c.qty}) = ${(c.price*c.qty).toFixed(2)} د%0A`;
+        if(c.note) msg += `  _ملاحظة: ${c.note}_%0A`;
+    });
+    
+    msg += `--------------------------%0A`;
+    msg += `*المجموع الإجمالي: ${total.toFixed(2)} د*%0A%0A`;
+    msg += `*شكراً لاختياركم أبو النجي كافيه*`;
+    
+    window.open("https://wa.me/962779864264?text="+msg);
+}
+</script>
+
+</body>  
+</html>
